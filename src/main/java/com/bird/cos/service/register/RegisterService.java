@@ -6,10 +6,12 @@ import com.bird.cos.dto.user.RegisterRequest;
 import com.bird.cos.repository.user.UserRepository;
 import com.bird.cos.repository.user.UserRoleRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.bird.cos.service.auth.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -19,9 +21,12 @@ public class RegisterService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerificationService emailVerificationService;
 
     @Transactional
     public User register(RegisterRequest req) {
+        String normalizedEmail = req.email().trim().toLowerCase(Locale.ROOT);
+
         // 이메일 중복 체크
         if (userRepository.findByUserEmail(req.email()).isPresent()) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
@@ -35,6 +40,10 @@ public class RegisterService {
         UserRole userRole = userRoleRepository.findById(1L)
                 .orElseThrow(() -> new IllegalStateException("기본 사용자 역할을 찾을 수 없습니다."));
 
+        if (!emailVerificationService.isVerified(normalizedEmail)) {
+            throw new IllegalStateException("이메일 인증을 완료해주세요.");
+        }
+
         User user = User.builder()
                 .userEmail(req.email())
                 .userPassword(passwordEncoder.encode(req.password()))
@@ -42,6 +51,7 @@ public class RegisterService {
                 .userName(req.name())
                 .userAddress(req.address())
                 .userPhone(req.phone())
+                .emailVerified(true)
                 .termsAgreed(Boolean.TRUE)
                 .userRole(userRole) // 역할 설정
                 .build();

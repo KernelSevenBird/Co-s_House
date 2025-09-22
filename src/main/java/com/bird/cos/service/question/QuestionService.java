@@ -163,6 +163,7 @@ public class QuestionService {
                     .userPassword(user.getUserPassword())
                     .userPhone(newPhone != null && !newPhone.trim().isEmpty() ? newPhone.trim() : user.getUserPhone())
                     .userUpdatedAt(user.getUserUpdatedAt())
+                    .emailVerified(user.isEmailVerified())
                     .build();
 
             return userRepository.save(updatedUser);
