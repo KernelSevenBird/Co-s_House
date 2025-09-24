@@ -8,6 +8,9 @@ import com.bird.cos.repository.user.UserRoleRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.bird.cos.service.auth.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
+import com.bird.cos.repository.user.UserRoleRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +31,7 @@ public class RegisterService {
         String normalizedEmail = req.email().trim().toLowerCase(Locale.ROOT);
 
         // 이메일 중복 체크
-        if (userRepository.findByUserEmail(req.email()).isPresent()) {
+        if (userRepository.findByUserEmail(normalizedEmail).isPresent()) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
         // 닉네임 중복 체크
@@ -56,6 +59,8 @@ public class RegisterService {
                 .userRole(userRole) // 역할 설정
                 .build();
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        emailVerificationService.consumeVerification(normalizedEmail);
+        return savedUser;
     }
 }
