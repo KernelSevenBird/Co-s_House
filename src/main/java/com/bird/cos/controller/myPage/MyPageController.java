@@ -16,19 +16,19 @@ import org.springframework.http.ResponseEntity;
 @RequiredArgsConstructor
 @RequestMapping("/mypage")
 @Slf4j
-public class MyPageController {
+public class MypageController {
 
-    private final MyPageService myPageService;
+    private final MyPageService mypageService;
 
 
     /**
      * 마이페이지 홈
      */
     @GetMapping("")
-    public String myPage(Model model, Authentication authentication) {
-        Long userId = myPageService.getUserIdFromAuthentication(authentication);
+    public String mypage(Model model, Authentication authentication) {
+        Long userId = mypageService.getUserIdFromAuthentication(authentication);
 
-        MyPageUserManageResponse userInfo = myPageService.getUserInfoById(userId);
+        MyPageUserManageResponse userInfo = mypageService.getUserInfoById(userId);
         model.addAttribute("userInfo", userInfo);
 
         // 임시 더미 데이터로 페이지 확인
@@ -37,31 +37,31 @@ public class MyPageController {
         model.addAttribute("reviewCount", 3);
         model.addAttribute("questionCount", 2);
 
-        return "myPage/myPage";
+        return "/mypage/mypage";
     }
 
     /**
      * 유저 정보 상세보기
      */
-    @GetMapping("/myPageUserDetail")
-    public String myPageUserDetail(Model model, Authentication authentication) {
-        Long userId = myPageService.getUserIdFromAuthentication(authentication);
-        MyPageUserManageResponse userInfo = myPageService.getUserInfoById(userId);
+    @GetMapping("/mypageUser")
+    public String mypageUserDetail(Model model, Authentication authentication) {
+        Long userId = mypageService.getUserIdFromAuthentication(authentication);
+        MyPageUserManageResponse userInfo = mypageService.getUserInfoById(userId);
         model.addAttribute("userInfo", userInfo);
-        return "myPage/myPageUserUpdate";
+        return "/mypage/mypage-user";
     }
 
     /**
      * 유저 정보 업데이트
      */
-    @PostMapping("/myPageUserUpdate")
-    public String myPageUserUpdate(@ModelAttribute MyPageUserUpdateRequest rq,
-                                 @RequestParam(required = false) String currentPassword,
-                                 Authentication authentication) {
-        Long userId = myPageService.getUserIdFromAuthentication(authentication);
+    @PostMapping("/mypageUserUpdate")
+    public String mypageUserUpdate(@ModelAttribute MyPageUserUpdateRequest rq,
+                                   @RequestParam(required = false) String currentPassword,
+                                   Authentication authentication) {
+        Long userId = mypageService.getUserIdFromAuthentication(authentication);
 
-        myPageService.updateUserInfoById(userId, rq, currentPassword);
-        return "redirect:/myPage/myPageUserDetail";
+        mypageService.updateUserInfoById(userId, rq, currentPassword);
+        return "redirect:/mypage/mypageUser";
     }
 
     /**
@@ -70,9 +70,9 @@ public class MyPageController {
     @PostMapping("/validatePassword")
     @ResponseBody
     public ResponseEntity<Boolean> validateCurrentPassword(@RequestParam String currentPassword,
-                                                          Authentication authentication,
-                                                          HttpServletRequest request) {
-        boolean isValid = myPageService.validateCurrentPassword(currentPassword, authentication, request);
+                                                           Authentication authentication,
+                                                           HttpServletRequest request) {
+        boolean isValid = mypageService.validateCurrentPassword(currentPassword, authentication, request);
         return ResponseEntity.ok(isValid);
     }
 
@@ -80,20 +80,21 @@ public class MyPageController {
     /**
      * 유저 정보 삭제
      */
-    @PostMapping("/myPageUserDelete")
-    public String deleteUser(Authentication authentication, HttpServletRequest request) {
+    @PostMapping("/mypageUserDelete")
+    public String mypageUserDelete(Authentication authentication, HttpServletRequest request) {
         try {
-            Long userId = myPageService.getUserIdFromAuthentication(authentication);
+            Long userId = mypageService.getUserIdFromAuthentication(authentication);
             log.info("회원 탈퇴가 시작되었습니다. 사용자 ID: {}", userId);
 
-            myPageService.deleteUserInfoById(userId);
+            mypageService.deleteUserInfoById(userId);
 
             request.getSession().invalidate();
             log.info("회원 탈퇴가 완료되었습니다. 사용자 ID: {}", userId);
             return "redirect:/";
+
         } catch (Exception e) {
             log.error("회원 탈퇴 처리 중 오류가 발생했습니다: {}", e.getMessage(), e);
-            return "redirect:/myPage/myPageUserDetail?error=withdrawal_failed";
+            return "redirect:/mypage/mypageUser?error=withdrawal_failed";
         }
     }
 
