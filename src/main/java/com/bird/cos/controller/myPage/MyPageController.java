@@ -1,8 +1,8 @@
 package com.bird.cos.controller.mypage;
 
-import com.bird.cos.dto.mypage.MyPageUserManageResponse;
-import com.bird.cos.dto.mypage.MyPageUserUpdateRequest;
-import com.bird.cos.service.mypage.MyPageService;
+import com.bird.cos.dto.mypage.MypageUserManageResponse;
+import com.bird.cos.dto.mypage.MypageUserUpdateRequest;
+import com.bird.cos.service.mypage.MypageService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 @Slf4j
 public class MypageController {
 
-    private final MyPageService mypageService;
+    private final MypageService mypageService;
 
 
     /**
@@ -28,7 +28,7 @@ public class MypageController {
     public String mypage(Model model, Authentication authentication) {
         Long userId = mypageService.getUserIdFromAuthentication(authentication);
 
-        MyPageUserManageResponse userInfo = mypageService.getUserInfoById(userId);
+        MypageUserManageResponse userInfo = mypageService.getUserInfoById(userId);
         model.addAttribute("userInfo", userInfo);
 
         // 임시 더미 데이터로 페이지 확인
@@ -46,7 +46,7 @@ public class MypageController {
     @GetMapping("/mypageUser")
     public String mypageUserDetail(Model model, Authentication authentication) {
         Long userId = mypageService.getUserIdFromAuthentication(authentication);
-        MyPageUserManageResponse userInfo = mypageService.getUserInfoById(userId);
+        MypageUserManageResponse userInfo = mypageService.getUserInfoById(userId);
         model.addAttribute("userInfo", userInfo);
         return "/mypage/mypage-user";
     }
@@ -55,7 +55,7 @@ public class MypageController {
      * 유저 정보 업데이트
      */
     @PostMapping("/mypageUserUpdate")
-    public String mypageUserUpdate(@ModelAttribute MyPageUserUpdateRequest rq,
+    public String mypageUserUpdate(@ModelAttribute MypageUserUpdateRequest rq,
                                    @RequestParam(required = false) String currentPassword,
                                    Authentication authentication) {
         Long userId = mypageService.getUserIdFromAuthentication(authentication);
