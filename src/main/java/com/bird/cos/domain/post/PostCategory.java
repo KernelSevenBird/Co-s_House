@@ -1,9 +1,17 @@
 package com.bird.cos.domain.post;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "POST_CATEGORY")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostCategory {
 
     @Id
@@ -22,5 +30,14 @@ public class PostCategory {
 
     @Column(name = "display_order")
     private Integer displayOrder = 0;
+
+    public void updatePostCategory(String postCategoryName,String postCategoryType,String iconUrl,Integer displayOrder)
+    {
+        this.postCategoryName = postCategoryName;
+        this.postCategoryType = postCategoryType;
+        this.iconUrl = iconUrl;
+        this.displayOrder = displayOrder;
+    }
+
 
 }

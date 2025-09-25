@@ -1,7 +1,5 @@
 package com.bird.cos.service.home;
 
-import com.bird.cos.domain.product.Product;
-import com.bird.cos.domain.post.Post;
 import com.bird.cos.repository.product.ProductRepository;
 import com.bird.cos.repository.post.PostRepository;
 import com.bird.cos.service.home.dto.HomePostDto;
@@ -12,7 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class HomeService {
+public class HomeService
+{
     private final ProductRepository productRepository;
     private final PostRepository postRepository;
 

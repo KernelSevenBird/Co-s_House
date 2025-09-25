@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시물 목록</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+    <style>
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F1F5F9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2B6CB0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            color: #2B6CB0;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .filter-group select {
+            padding: 8px;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+        }
+
+        .sort-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        th {
+            background-color: #B3CDE0;
+            color: #1A4971;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-create {
+            background-color: #2B6CB0;
+            color: #FFFFFF;
+        }
+
+        .btn-create:hover {
+            background-color: #1A4971;
+        }
+
+        .btn-view {
+            background-color: #68D391;
+            color: #FFFFFF;
+        }
+
+        .btn-view:hover {
+            background-color: #4C9A6A;
+        }
+
+        .btn-edit {
+            background-color: #F6AD55;
+            color: #FFFFFF;
+        }
+
+        .btn-edit:hover {
+            background-color: #DD6B20;
+        }
+
+        .btn-delete {
+            background-color: #F56565;
+            color: #FFFFFF;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background-color: #C53030;
+        }
+
+        .btn-back {
+            background-color: #A0AEC0;
+            color: #FFFFFF;
+        }
+
+        .btn-back:hover {
+            background-color: #718096;
+        }
+
+        .btn-save {
+            background-color: #2B6CB0;
+            color: #FFFFFF;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background-color: #1A4971;
+        }
+
+        .btn-sort {
+            background-color: #B3CDE0;
+            color: #1A4971;
+        }
+
+        .btn-sort:hover {
+            background-color: #8FB1CC;
+        }
+
+        .detail-box {
+            background-color: #EDF2F7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2B6CB0;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #E2E8F0;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+    </style>
+    /head>
+<body>
+<div class="container">
+    <h1>게시물 목록</h1>
+    <div class="filter-group">
+        <label for="category">카테고리 선택:</label>
+        <select id="category" onchange="filterByCategory(this.value)">
+            <option value="">전체</option>
+            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">카테고리</option>
+        </select>
+        <div class="sort-buttons">
+            <a th:href="@{/post/newest}" class="btn btn-sort">최신순</a>
+            <a th:href="@{/post/oldest}" class="btn btn-sort">오래된순</a>
+            <a th:href="@{/post/view_desc}" class="btn btn-sort">조회수</a>
+            <a th:href="@{/post/like_desc}" class="btn btn-sort">좋아요</a>
+        </div>
+    </div>
+    <a th:href="@{/post/save}" class="btn btn-create">새 게시물 작성</a>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>카테고리</th>
+            <th>조회수</th>
+            <th>좋아요</th>
+            <th>작업</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="post : ${postsList}">
+            <td th:text="${post.id}">1</td>
+            <td th:text="${post.title}">제목</td>
+            <td th:text="${post.author}">작성자</td>
+            <td th:text="${post.category.name}">카테고리</td>
+            <td th:text="${post.viewCount}">0</td>
+            <td th:text="${post.likeCount}">0</td>
+            <td>
+                <a th:href="@{/post/{postId}(postId=${post.id})}" class="btn btn-view">보기</a>
+                <a th:href="@{/post/update/{postId}(postId=${post.id})}" class="btn btn-edit">수정</a>
+                <form th:action="@{/post/delete/{postId}(postId=${post.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-delete">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+    function filterByCategory(categoryId) {
+        if (categoryId) {
+            window.location.href = '/post/category/' + categoryId;
+        } else {
+            window.location.href = '/post/';
+        }
+    }
+</script>
+</body>
+</html>

@@ -2,10 +2,19 @@ package com.bird.cos.domain.post;
 
 import com.bird.cos.domain.user.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "POST")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Data
 public class Post {
 
     @Id
@@ -50,5 +59,13 @@ public class Post {
 
     @Column(name = "post_updated_by")
     private Long postUpdatedBy;
+
+    public void updatePost(PostCategory postCategory,String title,String content,boolean isPublic)
+    {
+        this.postCategory = postCategory;
+        this.title = title;
+        this.content = content;
+        this.isPublic = isPublic;
+    }
 
 }

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시물 상세</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>게시물 상세</h1>
+    <div class="detail-box">
+        <p><strong>ID:</strong> <span th:text="${post.id}">1</span></p>
+        <p><strong>제목:</strong> <span th:text="${post.title}">제목</span></p>
+        <p><strong>작성자:</strong> <span th:text="${post.author}">작성자</span></p>
+        <p><strong>카테고리:</strong> <span th:text="${post.category.name}">카테고리</span></p>
+        <p><strong>조회수:</strong> <span th:text="${post.viewCount}">0</span></p>
+        <p><strong>좋아요:</strong> <span th:text="${post.likeCount}">0</span></p>
+        <p><strong>내용:</strong> <span th:text="${post.content}">내용</span></p>
+    </div>
+    <div class="button-group">
+        <a th:href="@{/post/}" class="btn btn-back">목록으로</a>
+        <a th:href="@{/post/update/{id}(id=${post.id})}" class="btn btn-edit">수정</a>
+        <form th:action="@{/post/delete/{id}(id=${post.id})}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-delete">삭제</button>
+            <button type="submit" class="btn btn-delete"></button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
