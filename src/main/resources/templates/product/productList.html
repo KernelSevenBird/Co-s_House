@@ -4,7 +4,7 @@
 <body class="page font-body product-page">
   <header th:replace="fragments/layout :: header"></header>
 
-  <main class="page-main product-page__main"
+  <main class="page-main"
         th:with="uri=${#httpServletRequest.requestURI},
                  isCategory=${#strings.startsWith(uri, '/product/category')},
                  defaultHero=@{/images/home.jpeg},

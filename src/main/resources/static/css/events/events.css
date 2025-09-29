@@ -1,7 +1,7 @@
 .events-main {
   padding-top: calc(var(--header-offset, 17px));
   padding-bottom: 96px;
-  background-color: #f5f7fb;
+  background-color: #ffffff;
 }
 
 .events-main__inner {

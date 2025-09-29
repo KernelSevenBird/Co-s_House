@@ -279,9 +279,8 @@ async function loadCartPreview() {
         syncSelectionWithCart();
 
         const baseSummary = calculateSummary(cartItems);
-        const mergedSummary = Object.assign({}, baseSummary, data?.summary || {});
-        renderSummary(mergedSummary, refs);
         renderItems(cartItems, refs, mergedSummary);
+        updateSelectedSummary();
 
         if (cartItems.length > 0) {
             if (refs.actionsEl) refs.actionsEl.hidden = false;
@@ -314,7 +313,7 @@ function createDemoData() {
         items: [
             {
                 id: 1,
-                cartItemId: 1,
+                cartItemId: null,
                 title: '모던 원목 책상',
                 quantity: 2,
                 unitPrice: 150000,
@@ -326,7 +325,7 @@ function createDemoData() {
             },
             {
                 id: 2,
-                cartItemId: 2,
+                cartItemId: null,
                 title: '에르고 체어',
                 quantity: 1,
                 unitPrice: 89000,
@@ -338,7 +337,7 @@ function createDemoData() {
             },
             {
                 id: 3,
-                cartItemId: 3,
+                cartItemId: null,
                 title: '북유럽 스탠드 조명',
                 quantity: 1,
                 unitPrice: 45000,
@@ -350,7 +349,7 @@ function createDemoData() {
             },
             {
                 id: 4,
-                cartItemId: 4,
+                cartItemId: null,
                 title: '미니멀 수납함',
                 quantity: 3,
                 unitPrice: 25000,
@@ -362,7 +361,7 @@ function createDemoData() {
             },
             {
                 id: 5,
-                cartItemId: 5,
+                cartItemId: null,
                 title: '소프트 쿠션',
                 quantity: 2,
                 unitPrice: 18000,
@@ -405,6 +404,7 @@ function renderGuestCart(refs) {
 
     renderSummary(guestSummary, refs);
     renderItems(normalized, refs, guestSummary);
+    updateSelectedSummary();
 
     if (refs.guestInfoEl) refs.guestInfoEl.hidden = false;
     if (refs.actionsEl) refs.actionsEl.hidden = false;
@@ -516,7 +516,7 @@ function renderItems(items, refs, summaryOverride) {
                             <button type="button" class="option-edit-btn" ${isApplying ? 'disabled' : ''}>옵션 변경</button>
                        </div>`
                     : (displayOptionLabel ? `<div class="item-option">${escapeHtml(displayOptionLabel)}</div>` : '')}
-                <div class="item-meta">단가 ${formatCurrency(unitPrice)}원</div>
+                <div class="item-meta">금액 ${formatCurrency(unitPrice)}원</div>
                 <div class="item-price">합계 ${formatCurrency(displayLineTotal)}원</div>
                 ${statusMessage}
                 ${isOut ? '<div class="item-status">재고가 부족한 상품입니다.</div>' : ''}
@@ -527,10 +527,6 @@ function renderItems(items, refs, summaryOverride) {
                         <input type="number" class="quantity-input" min="1" max="99" value="${displayQuantity}" aria-label="수량 입력" ${isApplying ? 'disabled' : ''}>
                         <button type="button" class="quantity-btn quantity-btn--plus" aria-label="수량 늘리기" ${displayQuantity >= 99 || isApplying ? 'disabled' : ''}>+</button>
                     </div>
-                    <button type="button" class="remove-btn" 
-                            onclick="removeItem(${index})" 
-                            aria-label="${escapeHtml(title)} 삭제"
-                            title="삭제" ${isApplying ? 'disabled' : ''}>🗑️</button>
                 </div>
             </div>
         `;
@@ -581,6 +577,7 @@ function toggleItemSelection(itemId, isChecked) {
         selectedItemIds.delete(id);
     }
     updateSelectionUI();
+    updateSelectedSummary();
 }
 
 function syncSelectionWithCart() {
@@ -809,14 +806,12 @@ function refreshCart() {
         checkoutBtn: document.getElementById('checkout-button')
     };
 
-    // 카운트 업데이트
     syncSelectionWithCart();
 
-    // 요약 정보 업데이트
-    const summary = calculateSummary(cartItems);
-    renderSummary(summary, refs);
+    const totalSummary = calculateSummary(cartItems);
+    updateCartCount(totalSummary.totalQuantity);
+    updateSelectedSummary();
 
-    // 아이템 목록 다시 렌더링
     if (refs.listEl) refs.listEl.innerHTML = '';
 
     if (cartItems.length === 0) {
@@ -826,7 +821,7 @@ function refreshCart() {
         selectedItemIds.clear();
         updateSelectionUI();
     } else {
-        renderItems(cartItems, refs, summary);
+        renderItems(cartItems, refs, totalSummary);
         if (refs.actionsEl) refs.actionsEl.hidden = false;
         if (refs.checkoutBtn) refs.checkoutBtn.disabled = false;
     }
@@ -863,8 +858,9 @@ function resolveItemsForCheckout() {
     if (!Array.isArray(cartItems)) {
         return [];
     }
+    // If no items are selected, return an empty array for checkout.
     if (selectedItemIds.size === 0) {
-        return cartItems.slice();
+        return [];
     }
     return cartItems.filter(item => selectedItemIds.has(String(item?.id)));
 }
@@ -948,6 +944,7 @@ function selectAllItems() {
         checkbox.checked = true;
     });
     updateSelectionUI();
+    updateSelectedSummary();
 }
 
 function deselectAllItems() {
@@ -956,6 +953,7 @@ function deselectAllItems() {
         checkbox.checked = false;
     });
     updateSelectionUI();
+    updateSelectedSummary();
 }
 
 async function removeSelectedItems() {
@@ -988,6 +986,9 @@ async function removeSelectedItems() {
                 alert('선택한 상품을 삭제하지 못했습니다. 잠시 후 다시 시도해주세요.');
                 return;
             }
+        } else {
+            // 서버에서 삭제할 항목이 없는 경우 (데모 데이터 등)
+            console.log('No valid cartItemIds found for server deletion - proceeding with local deletion only');
         }
     }
 
@@ -1186,8 +1187,25 @@ function updateSummary(summary, refs) {
     if (elements.shipping) elements.shipping.textContent = formatCurrency(shippingAmount);
     if (elements.discount) elements.discount.textContent = formatCurrency(expectedDiscount);
     if (elements.expected) elements.expected.textContent = formatCurrency(expectedAmount);
+}
 
-    updateCartCount(totalQuantity);
+function updateSelectedSummary() {
+    const selectedItems = cartItems.filter(item => selectedItemIds.has(String(item.id)));
+    const summary = calculateSummary(selectedItems);
+
+    const elements = {
+        quantity: document.getElementById('summary-quantity'),
+        total: document.getElementById('summary-total'),
+        shipping: document.getElementById('summary-shipping'),
+        discount: document.getElementById('summary-discount'),
+        expected: document.getElementById('summary-expected')
+    };
+
+    if (elements.quantity) elements.quantity.textContent = formatNumber(summary.totalQuantity);
+    if (elements.total) elements.total.textContent = formatCurrency(summary.totalAmount);
+    if (elements.shipping) elements.shipping.textContent = formatCurrency(summary.shippingCost);
+    if (elements.discount) elements.discount.textContent = formatCurrency(summary.expectedDiscount);
+    if (elements.expected) elements.expected.textContent = formatCurrency(summary.expectedAmount);
 }
 
 function loadGuestCartItems() {

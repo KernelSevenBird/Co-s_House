@@ -2,16 +2,17 @@ package com.bird.cos.domain.cart;
 
 import com.bird.cos.domain.user.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Setter
+@Builder
 @Getter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "CART",
         indexes = {
                 @Index(name = "idx_cart_user", columnList = "user_id"),

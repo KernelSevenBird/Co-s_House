@@ -388,7 +388,7 @@ html {
 .item-select input {
     width: 18px;
     height: 18px;
-    accent-color: var(--primary-color);
+    /*accent-color: var(--primary-color);*/
     cursor: pointer;
 }
 
@@ -519,17 +519,17 @@ html {
     outline-offset: 2px;
 }
 
-.remove-btn {
-    margin-left: auto;
-    padding: 0.5rem;
-    border: none;
-    background: none;
-    color: var(--gray-400);
-    cursor: pointer;
-    border-radius: 6px;
-    transition: var(--transition);
-    font-size: 1.2rem;
-}
+/*.remove-btn {*/
+/*    margin-left: auto;*/
+/*    padding: 0.5rem;*/
+/*    border: none;*/
+/*    background: none;*/
+/*    color: var(--gray-400);*/
+/*    cursor: pointer;*/
+/*    border-radius: 6px;*/
+/*    transition: var(--transition);*/
+/*    font-size: 1.2rem;*/
+/*}*/
 
 .remove-btn:hover {
     background: rgb(239 68 68 / 0.1);
@@ -940,7 +940,7 @@ body.modal-open {
         --gray-600: #cbd5e1;
         --gray-700: #e2e8f0;
         --gray-800: #f1f5f9;
-        --gray-900: #f8fafc;
+        --gray-900: #0f172a;
     }
 
     body {
