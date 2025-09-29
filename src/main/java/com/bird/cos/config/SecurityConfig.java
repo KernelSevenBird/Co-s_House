@@ -93,6 +93,7 @@ public class SecurityConfig {
                                 "/account/register",
                                 "/account/reset",
                                 "/controller/register/login",
+                                "/cart/",
                                 "/cart", //todo: 장바구니 권한
                                 "/product/**", //todo: 상품 권한
                                 "/product", //todo: 상품 권한

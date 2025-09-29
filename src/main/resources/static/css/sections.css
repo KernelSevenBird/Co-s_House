@@ -1,7 +1,7 @@
 /* Shared section/card/grid styles (loaded per-page) */
 /* Sections */
 .section { padding: 10px 0; }
-.section.section--spaced { margin-top: 18px; }
+.section.section--spaced { margin-top: 20px; }
 .section-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom: 12px; }
 .link-more { color: var(--color-muted); text-decoration:none; font-weight:600; }
 .link-more:hover { color: var(--color-primary); text-decoration:underline; }

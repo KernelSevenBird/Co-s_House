@@ -1050,18 +1050,83 @@
         localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
     }
 
+    function collectProductOptions() {
+        const selectEl = document.getElementById('product-options');
+        if (!selectEl) {
+            return [];
+        }
+
+        return Array.from(selectEl.options)
+            .filter(option => option && option.value)
+            .map(option => {
+                const optionId = normalizeOption(option.value);
+                return {
+                    optionId,
+                    optionName: option.dataset.optionName || '',
+                    optionValue: option.dataset.optionValue || (option.textContent || '').trim(),
+                    additionalPrice: parseMoney(option.dataset.additionalPrice)
+                };
+            });
+    }
+
+    function resolveOptionLabel(optionId, optionList, fallbackLabel) {
+        if (fallbackLabel && fallbackLabel.trim().length > 0) {
+            return fallbackLabel;
+        }
+        if (optionId == null) {
+            return '';
+        }
+        const match = optionList.find(opt => opt.optionId === optionId);
+        if (!match) {
+            return '';
+        }
+        const name = match.optionName ? match.optionName.trim() : '';
+        const value = match.optionValue ? match.optionValue.trim() : '';
+        if (name && value) {
+            return `${name}: ${value}`;
+        }
+        return name || value;
+    }
+
     function saveGuestCartItem(item) {
         const items = loadGuestCartItems();
-        const optionKey = item.optionId != null ? item.optionId : null;
+        const normalizedOptionId = normalizeOption(item.optionId);
+        const availableOptions = collectProductOptions();
+        const optionKey = normalizedOptionId != null ? normalizedOptionId : null;
         const index = items.findIndex(existing => existing.productId === item.productId && normalizeOption(existing.optionId) === optionKey);
 
+        const resolvedLabel = resolveOptionLabel(normalizedOptionId, availableOptions, item.optionLabel);
+        const now = new Date().toISOString();
+
         if (index >= 0) {
-            items[index].quantity = (items[index].quantity || 0) + item.quantity;
-            items[index].finalUnitPrice = item.finalUnitPrice;
-            items[index].updatedAt = new Date().toISOString();
+            const target = items[index];
+            target.quantity = (target.quantity || 0) + item.quantity;
+            target.finalUnitPrice = item.finalUnitPrice;
+            target.unitPrice = item.unitPrice;
+            target.optionId = normalizedOptionId;
+            target.optionLabel = resolvedLabel;
+            target.selectedOptions = optionKey != null ? String(optionKey) : null;
+            target.selectedOptionId = normalizedOptionId;
+            target.selectedOptionLabel = resolvedLabel;
+            target.options = availableOptions;
+            target.title = item.title || target.title;
+            target.imageUrl = item.imageUrl || target.imageUrl;
+            target.brandId = item.brandId;
+            target.brandName = item.brandName;
+            target.updatedAt = now;
         } else {
-            items.push({ ...item, updatedAt: new Date().toISOString() });
+            items.push({
+                ...item,
+                optionId: normalizedOptionId,
+                optionLabel: resolvedLabel,
+                selectedOptions: optionKey != null ? String(optionKey) : null,
+                selectedOptionId: normalizedOptionId,
+                selectedOptionLabel: resolvedLabel,
+                options: availableOptions,
+                updatedAt: now
+            });
         }
+
         saveGuestCartItems(items);
     }
 

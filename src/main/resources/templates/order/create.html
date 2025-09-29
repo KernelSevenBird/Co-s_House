@@ -1,15 +1,14 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/layout :: head('주문/결제')"></head>
-<!-- 페이지 전용 CSS 추가 -->
 <link rel="stylesheet" th:href="@{/css/order.css}">
 <body class="page font-body">
   <div th:replace="fragments/layout :: header"></div>
 
-  <div class="container">
-    <h1 class="page-title">주문/결제</h1>
+  <main class="main-content">
+    <div class="page-card">
 
-    <div class="order-layout">
+      <div class="order-layout">
       <!-- 왼쪽 섹션 -->
       <div class="left-section">
 
@@ -34,33 +33,49 @@
         </div>
 
         <!-- 배송지 정보 섹션 -->
-        <div class="section-card">
+        <div class="section-card" id="shipping-section"
+             data-postal-code=""
+             data-address=""
+             th:attr="data-recipient=${order.user.userName}, data-phone=${order.user.phone}, data-address=${order.user.address}">
           <h2 class="section-title">배송지 정보
-            <button type="button" class="coupon-link">변경</button>
+            <button type="button" class="coupon-link" id="address-change-btn">변경</button>
           </h2>
 
           <div class="form-group">
             <label class="form-label">받는 분</label>
-            <input type="text" class="input" th:value="${order.user.userName}" readonly>
+            <input type="text" class="input" id="shipping-recipient" th:value="${order.user.userName}" readonly>
           </div>
 
           <div class="form-group">
             <label class="form-label">연락처</label>
-            <input type="text" class="input" th:value="${order.user.phone}" readonly>
+            <input type="text" class="input" id="shipping-phone" th:value="${order.user.phone}" readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">우편번호</label>
+            <div class="address-inline">
+              <input type="text" class="input" id="shipping-postcode" placeholder="우편번호" readonly>
+              <button type="button" class="coupon-link" id="shipping-search-btn">주소 검색</button>
+            </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">주소</label>
-            <input type="text" class="input" th:value="${order.user.address}" readonly>
+            <input type="text" class="input" id="shipping-address" th:value="${order.user.address}" readonly>
           </div>
 
           <div class="form-group">
-            <button type="button" class="address-search-btn coupon-link">기본 배송지로 저장</button>
+            <label class="form-label">상세 주소</label>
+            <input type="text" class="input" id="shipping-address2" placeholder="상세 주소를 입력하세요">
+          </div>
+
+          <div class="form-group">
+            <button type="button" class="address-search-btn coupon-link" id="set-default-address-btn">기본 배송지로 저장</button>
           </div>
 
           <div class="form-group">
             <label class="form-label">배송시 요청사항을 선택해주세요</label>
-            <select class="input">
+            <select class="input" id="delivery-request-select">
               <option>배송시 요청사항을 선택해주세요</option>
               <option>문 앞에 놓아주세요</option>
               <option>경비실에 맡겨주세요</option>
@@ -131,45 +146,42 @@
       <!-- 오른쪽 섹션 - 결제 금액 -->
       <div class="right-section">
         <div class="payment-summary">
-          <h2 class="summary-title">결제금액</h2>
+          <h2 class="summary-title">💳 결제 금액</h2>
 
-          <div class="price-row">
-            <span class="price-label">총 상품 금액</span>
-            <span class="price-value" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + '원'">139,000원</span>
-          </div>
+          <dl class="summary-list">
+            <div>
+              <dt>총 상품 금액</dt>
+              <dd><span id="summary-total" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}">139,000</span>원</dd>
+            </div>
+            <div>
+              <dt>배송비</dt>
+              <dd><span id="summary-shipping">0</span>원</dd>
+            </div>
+            <div>
+              <dt>쿠폰 사용</dt>
+              <dd class="summary-negative">-<span id="summary-discount">0</span>원</dd>
+            </div>
+            <div>
+              <dt>포인트 사용</dt>
+              <dd class="summary-negative">-<span id="summary-point">0</span>원</dd>
+            </div>
+            <div class="em">
+              <dt>최종 결제 금액</dt>
+              <dd><span id="summary-expected" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">179,000</span>원</dd>
+            </div>
+          </dl>
 
-          <div class="price-row">
-            <span class="price-label">배송비</span>
-            <span class="price-value" id="shippingFee">0원</span>
-          </div>
-
-          <div class="price-row">
-            <span class="price-label">쿠폰 사용</span>
-            <span class="price-value">0원</span>
-          </div>
-
-          <div class="price-row">
-            <span class="price-label">포인트 사용</span>
-            <span class="price-value">0원</span>
-          </div>
-
-          <div class="total-row">
-            <span class="total-label">최종 결제 금액</span>
-            <span class="total-price" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' 원'">179,000 원</span>
-            <span class="installment-text">139 P 적립 예정</span>
-          </div>
-
-          <div class="terms-notice">
-            받아볼 텍스트 제안 이후입니다, 추후 내용을 업데이트합니다.
-            <br><br>
-            이용약관/결제대행 및 쇼핑몰 이용약관 개인정보 수집, 결제대행 서비스와 등 서비스에 대한 저 공인 시킬인증을 필이 방면 내용입니다.
-          </div>
+          <p class="summary-tip">
+            💡 결제 완료 시 자동으로 적립금과 쿠폰 혜택이 적용됩니다.
+          </p>
 
           <button type="button" class="payment-btn" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + '원 결제하기'">179,000 원 결제하기</button>
+          <p class="summary-footnote" id="summary-reward">0 P 적립 예정</p>
         </div>
       </div>
     </div>
-  </div>
+    </div>
+  </main>
 
   <!-- 쿠폰 모달 -->
   <div id="couponModal" class="modal">
@@ -182,6 +194,58 @@
         <div id="couponList" class="coupon-list">
           <div class="loading-message">쿠폰을 불러오는 중...</div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 배송지 모달 -->
+  <div id="addressModal" class="modal">
+    <div class="modal-content address-modal">
+      <div class="modal-header">
+        <h2>배송지 변경</h2>
+        <span class="close" onclick="closeAddressModal()">&times;</span>
+      </div>
+      <div class="modal-body address-modal__body">
+        <div class="address-modal__column">
+          <div class="address-modal__header">
+            <h3>내 배송지 목록</h3>
+            <button type="button" class="address-refresh-btn" onclick="reloadAddressList()">새로고침</button>
+          </div>
+          <div id="addressList" class="address-list">
+            <div class="loading-message">배송지를 불러오는 중...</div>
+          </div>
+        </div>
+        <div class="address-modal__column">
+          <h3>새 배송지 추가</h3>
+          <div class="address-form">
+            <label>받는 분
+              <input type="text" id="new-address-recipient" placeholder="홍길동">
+            </label>
+            <label>연락처
+              <input type="tel" id="new-address-phone" placeholder="010-0000-0000">
+            </label>
+            <label>우편번호
+              <div class="address-inline">
+                <input type="text" id="new-address-postcode" placeholder="12345" readonly>
+                <button type="button" class="coupon-link" id="new-address-search-btn">주소 검색</button>
+              </div>
+            </label>
+            <label>주소
+              <input type="text" id="new-address-line1" placeholder="기본 주소">
+            </label>
+            <label>상세 주소
+              <input type="text" id="new-address-line2" placeholder="동/호수 등 상세 정보">
+            </label>
+            <label class="address-default-checkbox">
+              <input type="checkbox" id="new-address-default"> 기본 배송지로 저장
+            </label>
+            <button type="button" class="address-apply-btn" onclick="applyNewAddress()">새 배송지 적용</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer address-modal__footer">
+        <button type="button" class="btn btn-outline" onclick="closeAddressModal()">취소</button>
+        <button type="button" class="btn" id="addressSelectBtn" onclick="applySelectedAddress()">선택한 배송지 적용</button>
       </div>
     </div>
   </div>
@@ -205,6 +269,11 @@
     const totalPrice = parseFloat('[[${ order.totalPrice }]]') || 0;
     let shippingCost = calculateShippingCost(); // 배송비 계산
     let availablePoints = 0; // 동적으로 로딩
+    let shippingInfo = null;
+    let userAddresses = [];
+    let selectedAddressId = null;
+    let addressesLoaded = false;
+    let postcodeScriptPromise = null;
 
     // 주문 상품 ID 목록 (쿠폰 필터링용)
     const orderProductIds = getOrderProductIds();
@@ -262,7 +331,73 @@
     document.addEventListener('DOMContentLoaded', function() {
         loadUserPoints(); // 포인트 로딩
         updatePaymentSummary();
+        initializeShippingSection();
+        initializeNewAddressForm();
     });
+
+    function loadPostcodeScript() {
+        if (typeof daum !== 'undefined' && daum.Postcode) {
+            return Promise.resolve();
+        }
+        if (postcodeScriptPromise) {
+            return postcodeScriptPromise;
+        }
+        postcodeScriptPromise = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('주소 검색 스크립트를 불러올 수 없습니다.'));
+            document.head.appendChild(script);
+        });
+        return postcodeScriptPromise;
+    }
+
+    function openPostcodeSearch(context) {
+        loadPostcodeScript()
+            .then(() => {
+                new daum.Postcode({
+                    oncomplete(data) {
+                        const zonecode = data.zonecode || '';
+                        const address = data.roadAddress || data.jibunAddress || '';
+                        let extraAddress = '';
+
+                        if (data.buildingName) {
+                            extraAddress = data.buildingName;
+                        }
+                        if (data.bname && data.bname.trim().length > 0) {
+                            extraAddress = extraAddress
+                                ? `${extraAddress}, ${data.bname}`
+                                : data.bname;
+                        }
+
+                        if (context.postcodeInput) {
+                            context.postcodeInput.value = zonecode;
+                        }
+                        if (context.addressInput) {
+                            context.addressInput.value = address;
+                        }
+                        if (context.extraInput) {
+                            context.extraInput.value = extraAddress;
+                        }
+                        if (typeof context.onSelected === 'function') {
+                            context.onSelected({
+                                zonecode,
+                                address,
+                                extraAddress
+                            });
+                        }
+
+                        if (context.extraInput) {
+                            context.extraInput.focus();
+                        }
+                    }
+                }).open();
+            })
+            .catch(error => {
+                console.error('주소 검색 기능 초기화 실패:', error);
+                alert('주소 검색 서비스를 사용할 수 없습니다. 잠시 후 다시 시도해주세요.');
+            });
+    }
 
     // 쿠폰 모달 열기
     function openCouponModal() {
@@ -457,17 +592,34 @@
         const recalculatedShippingCost = discountedProductPrice >= 30000 ? 0 : 3000;
         shippingCost = recalculatedShippingCost;
 
-        // 배송비 표시 업데이트
-        document.getElementById('shippingFee').textContent = shippingCost > 0 ? `${formatPrice(shippingCost)}원` : '무료배송';
+        // 합계 정보 업데이트
+        const summaryTotalEl = document.getElementById('summary-total');
+        if (summaryTotalEl) {
+            summaryTotalEl.textContent = formatPrice(totalPrice);
+        }
 
-        // 각 항목 업데이트 (h2 태그 때문에 인덱스가 1씩 밀림)
-        // nth-child(4) = 쿠폰 사용, nth-child(5) = 포인트 사용
-        document.querySelector('.price-row:nth-child(4) .price-value').textContent = couponDiscount > 0 ? `-${formatPrice(couponDiscount)}원` : `0원`;
-        document.querySelector('.price-row:nth-child(5) .price-value').textContent = validUsedPoints > 0 ? `-${formatPrice(validUsedPoints)}원` : `0원`;
+        const summaryShippingEl = document.getElementById('summary-shipping');
+        if (summaryShippingEl) {
+            summaryShippingEl.textContent = formatPrice(shippingCost);
+        }
+
+        const summaryDiscountEl = document.getElementById('summary-discount');
+        if (summaryDiscountEl) {
+            summaryDiscountEl.textContent = formatPrice(couponDiscount);
+        }
+
+        const summaryPointEl = document.getElementById('summary-point');
+        if (summaryPointEl) {
+            summaryPointEl.textContent = formatPrice(validUsedPoints);
+        }
 
         // 최종 결제 금액 계산 (0원 미만으로 내려가지 않도록)
         const finalAmount = Math.max(0, totalPrice + shippingCost - couponDiscount - validUsedPoints);
-        document.querySelector('.total-price').textContent = `${formatPrice(finalAmount)} 원`;
+
+        const summaryExpectedEl = document.getElementById('summary-expected');
+        if (summaryExpectedEl) {
+            summaryExpectedEl.textContent = formatPrice(finalAmount);
+        }
 
         // 포인트 입력값이 최대 사용 가능 포인트를 초과한 경우 조정
         if (usedPoints !== validUsedPoints) {
@@ -485,7 +637,10 @@
 
         // 적립 예정 포인트 (결제 금액의 1%)
         const earnPoints = Math.floor(finalAmount * 0.01);
-        document.querySelector('.installment-text').textContent = `${formatPrice(earnPoints)} P 적립 예정`;
+        const rewardEl = document.getElementById('summary-reward');
+        if (rewardEl) {
+            rewardEl.textContent = `${formatPrice(earnPoints)} P 적립 예정`;
+        }
     }
 
     // 결제 처리 함수
@@ -582,6 +737,8 @@
         finalAmountInput.value = finalAmount;
         form.appendChild(finalAmountInput);
 
+        appendShippingInfoToForm(form);
+
         document.body.appendChild(form);
 
         // 폼 전송 후 응답 처리를 위해 fetch 사용
@@ -612,6 +769,413 @@
         });
     }
 
+    function initializeShippingSection() {
+        const section = document.getElementById('shipping-section');
+        const recipientInput = document.getElementById('shipping-recipient');
+        const phoneInput = document.getElementById('shipping-phone');
+        const postcodeInput = document.getElementById('shipping-postcode');
+        const addressInput = document.getElementById('shipping-address');
+        const addressDetailInput = document.getElementById('shipping-address2');
+        const requestSelect = document.getElementById('delivery-request-select');
+        const changeBtn = document.getElementById('address-change-btn');
+        const setDefaultBtn = document.getElementById('set-default-address-btn');
+        const searchBtn = document.getElementById('shipping-search-btn');
+        const dataset = section?.dataset || {};
+
+        shippingInfo = {
+            addressId: dataset.addressId || null,
+            recipientName: dataset.recipient || recipientInput?.value?.trim() || '',
+            phone: dataset.phone || phoneInput?.value?.trim() || '',
+            postalCode: dataset.postalCode || postcodeInput?.value?.trim() || '',
+            addressLine1: dataset.address || addressInput?.value?.trim() || '',
+            addressLine2: addressDetailInput?.value?.trim() || '',
+            deliveryRequest: requestSelect?.value || '',
+            isDefault: true
+        };
+
+        selectedAddressId = shippingInfo.addressId;
+        applyShippingInfo(shippingInfo);
+
+        changeBtn?.addEventListener('click', openAddressModal);
+        requestSelect?.addEventListener('change', event => {
+            shippingInfo.deliveryRequest = event.target.value;
+        });
+
+        addressDetailInput?.addEventListener('input', event => {
+            shippingInfo.addressLine2 = event.target.value;
+        });
+
+        searchBtn?.addEventListener('click', event => {
+            event.preventDefault();
+            openPostcodeSearch({
+                postcodeInput,
+                addressInput,
+                extraInput: addressDetailInput,
+                onSelected(result) {
+                    shippingInfo = Object.assign({}, shippingInfo, {
+                        postalCode: result.zonecode,
+                        addressLine1: result.address,
+                        addressLine2: result.extraAddress || ''
+                    });
+                    applyShippingInfo(shippingInfo);
+                }
+            });
+        });
+
+        setDefaultBtn?.addEventListener('click', () => {
+            saveDefaultAddress().catch(error => {
+                console.warn('기본 배송지 저장 실패:', error);
+                alert('기본 배송지 저장 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            });
+        });
+    }
+
+    function initializeNewAddressForm() {
+        const searchBtn = document.getElementById('new-address-search-btn');
+        if (!searchBtn) {
+            return;
+        }
+        searchBtn.addEventListener('click', event => {
+            event.preventDefault();
+            openPostcodeSearch({
+                postcodeInput: document.getElementById('new-address-postcode'),
+                addressInput: document.getElementById('new-address-line1'),
+                extraInput: document.getElementById('new-address-line2')
+            });
+        });
+    }
+
+    function openAddressModal() {
+        const modal = document.getElementById('addressModal');
+        if (!modal) return;
+        modal.style.display = 'block';
+        document.body.classList.add('modal-open');
+
+        const listEl = document.getElementById('addressList');
+        if (listEl) {
+            listEl.innerHTML = '<div class="loading-message">배송지를 불러오는 중...</div>';
+        }
+
+        if (!addressesLoaded) {
+            loadUserAddresses().catch(error => {
+                console.error('배송지 목록 로드 실패:', error);
+                renderAddressList(userAddresses);
+            });
+        } else {
+            renderAddressList(userAddresses);
+        }
+    }
+
+    function closeAddressModal() {
+        const modal = document.getElementById('addressModal');
+        if (!modal) return;
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+    }
+
+    async function loadUserAddresses() {
+        try {
+            const response = await fetch('/order/my-addresses', {
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error(`Unexpected status ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (!Array.isArray(data)) {
+                throw new Error('Invalid address payload');
+            }
+
+            userAddresses = data.map((item, index) => ({
+                addressId: item.addressId ?? item.id ?? index,
+                recipientName: item.recipientName ?? item.name ?? '',
+                phone: item.phone ?? item.contact ?? '',
+                postalCode: item.postalCode ?? item.zipcode ?? '',
+                addressLine1: item.addressLine1 ?? item.address ?? '',
+                addressLine2: item.addressLine2 ?? item.detailAddress ?? '',
+                deliveryRequest: item.deliveryRequest ?? '',
+                alias: item.alias ?? item.label ?? '',
+                isDefault: item.isDefault === true
+            }));
+
+            if (!userAddresses.length && shippingInfo) {
+                userAddresses.push({
+                    addressId: shippingInfo.addressId ?? 'current',
+                    recipientName: shippingInfo.recipientName,
+                    phone: shippingInfo.phone,
+                    postalCode: shippingInfo.postalCode,
+                    addressLine1: shippingInfo.addressLine1,
+                    addressLine2: shippingInfo.addressLine2,
+                    deliveryRequest: shippingInfo.deliveryRequest,
+                    alias: '현재 배송지',
+                    isDefault: true
+                });
+            }
+
+            addressesLoaded = true;
+            renderAddressList(userAddresses);
+        } catch (error) {
+            console.error('배송지 조회 중 오류:', error);
+            if (!userAddresses.length && shippingInfo) {
+                userAddresses = [{
+                    addressId: shippingInfo.addressId ?? 'current',
+                    recipientName: shippingInfo.recipientName,
+                    phone: shippingInfo.phone,
+                    postalCode: shippingInfo.postalCode,
+                    addressLine1: shippingInfo.addressLine1,
+                    addressLine2: shippingInfo.addressLine2,
+                    deliveryRequest: shippingInfo.deliveryRequest,
+                    alias: '현재 배송지',
+                    isDefault: true
+                }];
+            }
+            renderAddressList(userAddresses);
+        }
+    }
+
+    function renderAddressList(addresses) {
+        const listEl = document.getElementById('addressList');
+        if (!listEl) return;
+
+        if (!Array.isArray(addresses) || addresses.length === 0) {
+            listEl.innerHTML = '<div class="no-coupons">등록된 배송지가 없습니다. 오른쪽에서 새 배송지를 추가해 주세요.</div>';
+            return;
+        }
+
+        listEl.innerHTML = addresses.map(address => {
+            const id = address.addressId ?? '';
+            const combinedAddress = [address.addressLine1, address.addressLine2].filter(Boolean).join(' ');
+            const isChecked = String(selectedAddressId ?? '') === String(id);
+            const tags = [];
+            if (address.isDefault) {
+                tags.push('<span class="address-tag">기본</span>');
+            }
+            if (address.alias) {
+                tags.push(`<span class="address-tag">${escapeHtml(address.alias)}</span>`);
+            }
+
+            return `
+                <label class="address-card">
+                    <input type="radio" name="savedAddressRadio" value="${escapeHtml(String(id))}" ${isChecked ? 'checked' : ''}>
+                    <div class="address-card__body">
+                        <div class="address-card__name">${escapeHtml(address.recipientName || '')}</div>
+                        <div class="address-card__meta">${escapeHtml(address.phone || '')} · ${escapeHtml(address.postalCode || '')}</div>
+                        <div class="address-card__meta">${escapeHtml(combinedAddress)}</div>
+                        ${tags.length ? `<div class="address-card__tags">${tags.join('')}</div>` : ''}
+                    </div>
+                </label>
+            `;
+        }).join('');
+    }
+
+    function applySelectedAddress() {
+        const checked = document.querySelector('input[name="savedAddressRadio"]:checked');
+        if (!checked) {
+            alert('배송지를 선택해주세요.');
+            return;
+        }
+
+        const target = userAddresses.find(address => String(address.addressId ?? '') === checked.value);
+        if (!target) {
+            alert('선택한 배송지를 찾을 수 없습니다.');
+            return;
+        }
+
+        applyShippingInfo({
+            addressId: target.addressId,
+            recipientName: target.recipientName,
+            phone: target.phone,
+            postalCode: target.postalCode,
+            addressLine1: target.addressLine1,
+            addressLine2: target.addressLine2,
+            deliveryRequest: target.deliveryRequest,
+            isDefault: target.isDefault
+        });
+
+        closeAddressModal();
+    }
+
+    function applyNewAddress() {
+        const recipient = document.getElementById('new-address-recipient').value.trim();
+        const phone = document.getElementById('new-address-phone').value.trim();
+        const postcode = document.getElementById('new-address-postcode').value.trim();
+        const line1 = document.getElementById('new-address-line1').value.trim();
+        const line2 = document.getElementById('new-address-line2').value.trim();
+        const request = document.getElementById('new-address-request').value.trim();
+        const isDefault = document.getElementById('new-address-default').checked;
+
+        if (!recipient || !phone || !line1) {
+            alert('받는 분, 연락처, 주소는 필수 입력입니다.');
+            return;
+        }
+
+        const tempId = `temp-${Date.now()}`;
+        const newAddress = {
+            addressId: tempId,
+            recipientName: recipient,
+            phone,
+            postalCode: postcode,
+            addressLine1: line1,
+            addressLine2: line2,
+            deliveryRequest: request,
+            isDefault,
+            alias: '새 배송지'
+        };
+
+        userAddresses.unshift(newAddress);
+        addressesLoaded = true;
+        selectedAddressId = tempId;
+
+        renderAddressList(userAddresses);
+        applyShippingInfo(newAddress);
+        closeAddressModal();
+        clearNewAddressForm();
+    }
+
+    function applyShippingInfo(info) {
+        if (!info) return;
+
+        shippingInfo = {
+            addressId: info.addressId ?? null,
+            recipientName: info.recipientName ?? shippingInfo?.recipientName ?? '',
+            phone: info.phone ?? shippingInfo?.phone ?? '',
+            postalCode: info.postalCode ?? shippingInfo?.postalCode ?? '',
+            addressLine1: info.addressLine1 ?? shippingInfo?.addressLine1 ?? '',
+            addressLine2: info.addressLine2 ?? shippingInfo?.addressLine2 ?? '',
+            deliveryRequest: info.deliveryRequest ?? shippingInfo?.deliveryRequest ?? '',
+            isDefault: info.isDefault ?? false
+        };
+
+        selectedAddressId = shippingInfo.addressId;
+
+        const recipientInput = document.getElementById('shipping-recipient');
+        const phoneInput = document.getElementById('shipping-phone');
+        const postcodeInput = document.getElementById('shipping-postcode');
+        const addressInput = document.getElementById('shipping-address');
+        const addressDetailInput = document.getElementById('shipping-address2');
+        const requestSelect = document.getElementById('delivery-request-select');
+        const section = document.getElementById('shipping-section');
+
+        if (recipientInput) recipientInput.value = shippingInfo.recipientName;
+        if (phoneInput) phoneInput.value = shippingInfo.phone;
+        if (postcodeInput) postcodeInput.value = shippingInfo.postalCode;
+        if (addressInput) addressInput.value = shippingInfo.addressLine1 || '';
+        if (addressDetailInput) addressDetailInput.value = shippingInfo.addressLine2 || '';
+
+        if (requestSelect) {
+            if (shippingInfo.deliveryRequest) {
+                const hasOption = Array.from(requestSelect.options).some(opt => opt.value === shippingInfo.deliveryRequest);
+                if (!hasOption) {
+                    const customOption = document.createElement('option');
+                    customOption.value = shippingInfo.deliveryRequest;
+                    customOption.textContent = shippingInfo.deliveryRequest;
+                    requestSelect.appendChild(customOption);
+                }
+                requestSelect.value = shippingInfo.deliveryRequest;
+            } else {
+                requestSelect.selectedIndex = 0;
+            }
+        }
+
+        if (addressesLoaded) {
+            renderAddressList(userAddresses);
+        }
+
+        if (section) {
+            section.dataset.recipient = shippingInfo.recipientName || '';
+            section.dataset.phone = shippingInfo.phone || '';
+            section.dataset.address = shippingInfo.addressLine1 || '';
+            section.dataset.postalCode = shippingInfo.postalCode || '';
+            if (shippingInfo.addressId != null) {
+                section.dataset.addressId = shippingInfo.addressId;
+            } else {
+                delete section.dataset.addressId;
+            }
+        }
+    }
+
+    function clearNewAddressForm() {
+        document.getElementById('new-address-recipient').value = '';
+        document.getElementById('new-address-phone').value = '';
+        document.getElementById('new-address-postcode').value = '';
+        document.getElementById('new-address-line1').value = '';
+        document.getElementById('new-address-line2').value = '';
+        document.getElementById('new-address-request').value = '';
+        document.getElementById('new-address-default').checked = false;
+    }
+
+    function reloadAddressList() {
+        addressesLoaded = false;
+        const listEl = document.getElementById('addressList');
+        if (listEl) {
+            listEl.innerHTML = '<div class="loading-message">배송지를 불러오는 중...</div>';
+        }
+        loadUserAddresses().catch(error => {
+            console.error('배송지 재로드 실패:', error);
+            renderAddressList(userAddresses);
+        });
+    }
+
+    async function saveDefaultAddress() {
+        if (!shippingInfo) {
+            throw new Error('배송지 정보가 없습니다.');
+        }
+
+        if (!shippingInfo.addressId || String(shippingInfo.addressId).startsWith('temp-')) {
+            alert('먼저 배송지를 저장한 뒤 기본 배송지로 설정할 수 있습니다.');
+            return;
+        }
+
+        const payload = {
+            addressId: shippingInfo.addressId,
+            recipientName: shippingInfo.recipientName,
+            phone: shippingInfo.phone,
+            postalCode: shippingInfo.postalCode,
+            addressLine1: shippingInfo.addressLine1,
+            addressLine2: shippingInfo.addressLine2,
+            deliveryRequest: shippingInfo.deliveryRequest
+        };
+
+        const response = await fetch('/order/my-addresses/default', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Unexpected status ${response.status}`);
+        }
+
+        alert('기본 배송지로 저장되었습니다.');
+    }
+
+    function appendShippingInfoToForm(form) {
+        if (!shippingInfo) {
+            return;
+        }
+
+        const entries = {
+            shippingAddressId: shippingInfo.addressId ?? '',
+            recipientName: shippingInfo.recipientName ?? '',
+            recipientPhone: shippingInfo.phone ?? '',
+            shippingPostalCode: shippingInfo.postalCode ?? '',
+            shippingAddressLine1: shippingInfo.addressLine1 ?? '',
+            shippingAddressLine2: shippingInfo.addressLine2 ?? '',
+            deliveryRequest: shippingInfo.deliveryRequest ?? ''
+        };
+
+        Object.entries(entries).forEach(([name, value]) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        });
+    }
+
     // 숫자 포맷팅 (콤마 추가)
     function formatPrice(price) {
         if (price === null || price === undefined || isNaN(price)) {
@@ -627,6 +1191,18 @@
         return date.toLocaleDateString('ko-KR');
     }
 
+    function escapeHtml(str) {
+        if (str === null || str === undefined) {
+            return '';
+        }
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     // 따옴표 이스케이프
     function escapeQuotes(str) {
         if (!str) return '';
@@ -635,9 +1211,15 @@
 
     // 모달 외부 클릭 시 닫기
     window.onclick = function(event) {
-        const modal = document.getElementById('couponModal');
-        if (event.target == modal) {
-            modal.style.display = 'none';
+        const couponModal = document.getElementById('couponModal');
+        const addressModal = document.getElementById('addressModal');
+
+        if (event.target === couponModal) {
+            couponModal.style.display = 'none';
+        }
+
+        if (event.target === addressModal) {
+            closeAddressModal();
         }
     }
   </script>
@@ -672,7 +1254,7 @@
 
     .method-tag {
       background: #e3f2fd;
-      color: #1976d2;
+      color: #3c9dfc;
       padding: 2px 6px;
       border-radius: 4px;
       font-size: 11px;

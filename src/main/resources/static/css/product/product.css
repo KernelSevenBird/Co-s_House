@@ -1,13 +1,16 @@
+/* 정렬 드롭다운 라벨 */
 .sort-label {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--color-muted);
 }
 
+/* 제품 페이지 전체 래퍼 */
 .product-page__main {
     background: var(--brand-50);
 }
 
+/* 공통 메인 콘텐츠 여백 */
 .product-page .main-content {
     padding: 48px 0 80px;
 }
@@ -19,7 +22,7 @@
     border-bottom: 1px solid rgba(57, 108, 173, 0.15);
     overflow: hidden;
     color: #ffffff;
-    background: linear-gradient(135deg, rgba(9, 20, 40, 0.92) 0%, rgba(9, 132, 227, 0.4) 60%, rgba(255, 255, 255, 0.08) 100%);
+    background: linear-gradient(135deg, rgba(9, 20, 40, 0.92) 0%, rgb(60, 157, 252) 60%, rgba(255, 255, 255, 0.08) 100%);
 }
 
 /* 슬라이더 뼈대 */
@@ -300,7 +303,7 @@
     object-fit: cover;
 }
 
-/* Toolbar & categories */
+/* 툴바 & 카테고리: 고정 정렬 컨트롤 */
 .product-toolbar {
     background: #fff;
     border-bottom: 1px solid var(--border-light);
@@ -400,7 +403,7 @@
     box-shadow: 0 10px 22px rgba(9, 132, 227, 0.25);
 }
 
-/* Product list */
+/* 상품 목록: 헤더 및 제어 */
 .product-list {
     padding: 48px 0 80px;
 }
@@ -425,6 +428,7 @@
     font-size: 0.95rem;
 }
 
+/* 반응형 상품 그리드 */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -449,6 +453,7 @@
     }
 }
 
+/* 개별 상품 카드 */
 .product-card {
     background: #fff;
     border-radius: 24px;
@@ -470,6 +475,7 @@
     height: 100%;
 }
 
+/* 상품 이미지 프레임 */
 .product-card__image {
     position: relative;
     background: linear-gradient(135deg, rgba(116, 185, 255, 0.3) 0%, rgba(9, 132, 227, 0.12) 100%);
@@ -571,7 +577,7 @@
     font-size: 0.85rem;
 }
 
-/* Empty state */
+/* 비어 있는 상태 메시지 */
 .product-empty {
     display: flex;
     justify-content: center;
@@ -615,7 +621,8 @@
     box-shadow: none;
 }
 
-/* Responsive */
+/* 반응형 보정 */
+/* 태블릿 구간 보정 */
 @media (max-width: 1024px) {
     .hero-carousel {
         min-height: 480px;
@@ -655,6 +662,7 @@
     }
 }
 
+/* 패블릿 구간 보정 */
 @media (max-width: 768px) {
     .container {
         padding: 0 16px;
@@ -696,6 +704,7 @@
     }
 }
 
+/* 소형 모바일 구간 보정 */
 @media (max-width: 640px) {
     .hero-carousel {
         min-height: 360px;
@@ -728,6 +737,8 @@
         padding: 40px 24px;
     }
 }
+
+/* 페이지 전용 디자인 토큰 */
 :root {
     --primary-color: var(--color-primary);
     --primary-dark: var(--color-primary-600);
