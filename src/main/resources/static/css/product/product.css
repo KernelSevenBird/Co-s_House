@@ -66,7 +66,7 @@
 .hero-slide__layer {
     position: absolute;
     inset: 0;
-    background: linear-gradient(120deg, rgb(255, 255, 255) 0%, rgb(215, 213, 213) 30%, rgba(255, 255, 255, 0.12) 60%);
+    background: linear-gradient(120deg, rgb(228, 241, 255) 0%, rgb(215, 213, 213) 24%, rgba(255, 255, 255, 0.12) 80%);
 }
 
 /* 슬라이드 내부 텍스트 콘텐츠 */
@@ -256,8 +256,6 @@
     pointer-events: none;
 }
 
-
-
 /* 슬라이드가 없을 때 사용하는 기본 히어로 */
 .product-hero__inner {
     position: relative;
@@ -342,7 +340,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    padding: 30px 0;
+    padding: 18px 0;
     flex-wrap: wrap;
 }
 
@@ -363,7 +361,7 @@
 .category-scroll a {
     display: inline-flex;
     align-items: center;
-    padding: 8px 22px;
+    padding: 8px 18px;
     border-radius: 999px;
     background: #fff;
     /*border: 1px solid var(--border-light);*/
