@@ -78,6 +78,9 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    /*!* 텍스트 가독성 향상을 위한 폰트 그림자 *!*/
+    /*text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35),*/
+    /*0 3px 12px rgba(0, 0, 0, 0.28);*/
 }
 
 .hero-slide__eyebrow {
