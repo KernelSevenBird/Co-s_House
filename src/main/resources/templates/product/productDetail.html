@@ -725,14 +725,6 @@
                 <!-- 상품 이미지 -->
                 <div class="product-image">
                     <img th:src="${product.mainImageUrl}" alt="상품 대표 이미지" style="width:100%;">
-
-                    <div class="thumbnail-images" style="margin-top:10px;">
-                        <img th:each="image : ${productImages}"
-                             th:src="${image.imageUrl}"
-                             th:alt="${image.altText}"
-                             style="width:80px; height:80px; margin-right:5px; cursor:pointer;"
-                             onclick="changeMainImage(this.src)">
-                    </div>
                 </div>
 
 
@@ -1840,10 +1832,6 @@
 
         url.hash = 'inquiry';
         window.location.href = url.toString();
-    }
-
-    function changeMainImage(src) {
-        document.querySelector('.product-image > img').src = src;
     }
 
 </script>
