@@ -127,6 +127,30 @@
             </div>
         </div>
     </section>
+
+    <!-- 페이지네이션  -->
+    <section class="product-pagination container" th:if="${totalPages != null and totalPages > 1}">
+        <div class="pagination">
+            <button type="button"
+                    th:disabled="${currentPage == 1}"
+                    th:onclick="'goToProductPage(' + (${currentPage} - 1) + ')'">이전</button>
+
+            <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+                <a th:if="${i != currentPage}"
+                   href="javascript:void(0)"
+                   th:onclick="'goToProductPage(' + ${i} + ')'"
+                   th:text="${i}"></a>
+                <span th:if="${i == currentPage}"
+                      th:text="${i}"
+                      style="font-weight:bold;"></span>
+            </th:block>
+
+            <button type="button"
+                    th:disabled="${currentPage == totalPages}"
+                    th:onclick="'goToProductPage(' + (${currentPage} + 1) + ')'">다음</button>
+        </div>
+    </section>
+
 </main>
 
 <footer th:replace="fragments/layout :: footer"></footer>
@@ -273,6 +297,16 @@
         }
 
         window.location.href = target;
+    }
+
+    function goToProductPage(page) {
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+
+        params.set('page', page);
+        url.search = params.toString();
+
+        window.location.href = url.toString();
     }
     /*]]>*/
 </script>

@@ -737,3 +737,51 @@
     --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.08);
     --shadow-md: 0 12px 32px rgba(15, 23, 42, 0.12);
 }
+
+.product-pagination {
+    margin: 60px auto 80px;
+    display: flex;
+    justify-content: center;
+}
+
+.product-pagination .pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-pagination .pagination button,
+.product-pagination .pagination a,
+.product-pagination .pagination span {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.product-pagination .pagination button:not(:disabled):hover,
+.product-pagination .pagination a:hover {
+    border-color: #3c9dfc;
+    color: #3c9dfc;
+    background-color: #f0faff;
+}
+
+.product-pagination .pagination span[style*="font-weight:bold"] {
+    background-color: #3c9dfc;
+    color: #ffffff;
+    border-color: #3c9dfc;
+    font-weight: bold;
+}
+
+.product-pagination .pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
