@@ -10,6 +10,7 @@
 }
 
 /* 사용자 정보 수정 컨테이너 */
+
 .user-update-container {
     background: white;
     border-radius: 12px;
@@ -535,3 +536,4 @@
     border-color: var(--brand-600) !important;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
 }
+
