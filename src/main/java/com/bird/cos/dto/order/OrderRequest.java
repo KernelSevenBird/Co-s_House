@@ -1,13 +1,14 @@
 package com.bird.cos.dto.order;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Getter
+@Setter
 @ToString
 public class OrderRequest {
 
@@ -16,23 +17,6 @@ public class OrderRequest {
     private Integer quantity;
     private BigDecimal price;
     private Long cartItemId;
-
-    // 기본 setter들
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public void setCartItemId(Long cartItemId) {
-        this.cartItemId = cartItemId;
-    }
 
     public void setCartItemId(String cartItemIdStr) {
         if (cartItemIdStr == null || cartItemIdStr.trim().isEmpty()) {

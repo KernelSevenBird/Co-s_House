@@ -1,6 +1,7 @@
 package com.bird.cos.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -12,6 +13,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -20,9 +22,11 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
+        log.error("Validation error on {}: {}", req.getRequestURI(), ex.getMessage());
         Map<String, String> errors = new HashMap<>();
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
             errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+            log.error("  Field: {}, Error: {}", fieldError.getField(), fieldError.getDefaultMessage());
         }
         ErrorResponse body = ErrorResponse.of(ErrorCode.INVALID_OPERATION, req.getRequestURI(), errors);
         return ResponseEntity.status(ErrorCode.INVALID_OPERATION.getStatus()).body(body);
@@ -33,6 +37,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException ex, HttpServletRequest req) {
+        log.error("IllegalArgumentException on {}: {}", req.getRequestURI(), ex.getMessage(), ex);
         ErrorResponse body = ErrorResponse.of(ErrorCode.INVALID_OPERATION, req.getRequestURI());
         return ResponseEntity.status(ErrorCode.INVALID_OPERATION.getStatus()).body(body);
     }
@@ -51,6 +56,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleOthers(Exception ex, HttpServletRequest req) {
+        log.error("Unhandled exception on {}: {} - {}", req.getRequestURI(), ex.getClass().getName(), ex.getMessage(), ex);
         ErrorResponse body = ErrorResponse.of(ErrorCode.INVALID_OPERATION, req.getRequestURI());
         return ResponseEntity.status(ErrorCode.INVALID_OPERATION.getStatus()).body(body);
     }
