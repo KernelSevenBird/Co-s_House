@@ -120,8 +120,8 @@
                                 <td th:text="${log.ipAddress}">0.0.0.0</td>
                                 <td>
                                     <span class="badge" 
-                                          th:classappend="${log.accessStatus >= 200 && log.accessStatus < 300} ? 'bg-success' : 
-                                                          ${log.accessStatus >= 400 && log.accessStatus < 500} ? 'bg-warning' : 'bg-danger'"
+                                          th:classappend="${log.accessStatus >= 200 and log.accessStatus < 300} ? 'bg-success' :
+                                                          (log.accessStatus >= 400 and log.accessStatus < 500) ? 'bg-warning' : 'bg-danger'"
                                           th:text="${log.accessStatus}">200</span>
                                 </td>
                                 <td>
@@ -130,7 +130,7 @@
                                           th:text="${log.accessResultDisplay}">결과</span>
                                 </td>
                             </tr>
-                            <tr th:if="${logs.content.empty}">
+                            <tr th:if="${#lists.isEmpty(logs.content)}">
                                 <td colspan="8" class="text-center">조회된 로그가 없습니다.</td>
                             </tr>
                         </tbody>

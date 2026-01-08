@@ -73,21 +73,12 @@ public class AdminLogService {
     public Map<String, Object> getAdminAccessStatistics() {
         Map<String, Object> stats = new HashMap<>();
         
-        // 전체 관리자 접근 수
-        long totalAccess = userActivityLogRepository.findAll().stream()
-                .filter(log -> Boolean.TRUE.equals(log.getIsAdminAccess()))
-                .count();
+        long totalAccess = userActivityLogRepository.countByIsAdminAccessTrue();
         
-        // 성공/실패 비율
-        long successCount = userActivityLogRepository.findAll().stream()
-                .filter(log -> Boolean.TRUE.equals(log.getIsAdminAccess()))
-                .filter(log -> UserActivityLog.AccessResult.SUCCESS.equals(log.getAccessResult()))
-                .count();
+        long successCount = userActivityLogRepository
+                .countByIsAdminAccessTrueAndAccessResult(UserActivityLog.AccessResult.SUCCESS);
         
-        long failedCount = userActivityLogRepository.findAll().stream()
-                .filter(log -> Boolean.TRUE.equals(log.getIsAdminAccess()))
-                .filter(log -> !UserActivityLog.AccessResult.SUCCESS.equals(log.getAccessResult()))
-                .count();
+        long failedCount = totalAccess - successCount;
         
         stats.put("totalAccess", totalAccess);
         stats.put("successCount", successCount);

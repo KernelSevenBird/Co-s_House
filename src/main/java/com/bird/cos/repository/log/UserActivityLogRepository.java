@@ -41,4 +41,8 @@ public interface UserActivityLogRepository extends JpaRepository<UserActivityLog
            "ORDER BY ual.activityTime DESC")
     Page<UserActivityLog> findFailedAdminAccess(Pageable pageable);
 
+    long countByIsAdminAccessTrue();
+
+    long countByIsAdminAccessTrueAndAccessResult(UserActivityLog.AccessResult accessResult);
+
 }
